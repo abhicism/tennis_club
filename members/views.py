@@ -1,5 +1,5 @@
-from django.http import HttpResponse
-from django.template import loader
+from django.http import HttpResponse   # HttpResponse is used to send raw content (HTML/text) back to the browser
+from django.template import loader     # loader helps Django find and load HTML template files
 from .models import Member
 
 def members(request):
