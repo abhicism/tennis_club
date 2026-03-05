@@ -1,8 +1,10 @@
 {% extends "master.html" %}
+<!-- This template inherits the base layout from master.html -->
 
 {% block title %}
   My Tennis Club
 {% endblock %}
+<!-- This block replaces the 'title' block defined in master.html -->
 
 
 {% block content %}
@@ -11,5 +13,8 @@
   <h3>Members</h3>
   
   <p>Check out all our <a href="members/">members</a></p>
+  <!-- Paragraph with a hyperlink that navigates to the members page.
+       "members/" refers to a URL path defined in urls.py -->
   
 {% endblock %}
+<!-- End of content block -->

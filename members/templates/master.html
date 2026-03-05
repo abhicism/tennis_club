@@ -1,10 +1,15 @@
+<!--master is the base template contains layout layer -->
 <!DOCTYPE html>
 <html>
 <head>
   <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
-
+<!-- block means placeholder section inside a parent template
+ that child template can override
+ more like:
+ "content can be inserted here"
+ -->
 {% block content %}
 {% endblock %}
 
