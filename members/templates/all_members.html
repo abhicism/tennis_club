@@ -1,19 +1,30 @@
-{% extends "master.html" %}
+{% extends "master.html" %} 
 
 {% block title %}
   My Tennis Club - List of all members
 {% endblock %}
+<!-- This replaces the 'title' block defined in master.html.
+     It sets the page title shown in the browser tab. -->
 
 
 {% block content %}
-
+<!-- This block replaces the 'content' section in master.html -->
   <p><a href="/">HOME</a></p>
-
+<!-- A hyperlink that redirects the user to the homepage (root URL '/') -->
   <h1>Members</h1>
-  
-  <ul>
+    <!-- Main heading for the page -->
+  <ul>   <!-- Start an unordered list to display all members -->
     {% for x in mymembers %}
+     <!-- Django template loop.
+           It iterates through the 'mymembers' data sent from the view.
+           Each item is stored in variable 'x'. -->
       <li><a href="details/{{ x.id }}">{{ x.firstname }} {{ x.lastname }}</a></li>
-    {% endfor %}
+       <!-- Displays each member's first name and last name.
+           The name is clickable and links to the details page of that member.
+           {{ x.id }} inserts the member's id dynamically into the URL. -->
+
+    {% endfor %}  <!-- End of the loop -->
   </ul>
+  <!-- End of the members list -->
 {% endblock %}
+<!-- End of content block -->

@@ -24,22 +24,35 @@ def members(request): #here member is the view function name
 #renders the template with the provided context data.
 # Wraps the rendered HTML inside HttpResponse
 #send the final html response back to the browser
-  
+#view function that handles request to display one specific member by their ID.  
 def details(request, id):
+  #fetch single member record from the database where the ID matches the URL parameter.
   mymember = Member.objects.get(id=id)
+  #load the "details.html" template file.
   template = loader.get_template('details.html')
+  #create context dictionary to pass member data to the template
   context = {
-    'mymember': mymember,
+    'mymember': mymember, #this variable will be used inside the template
   }
+  #render the template with the member data and return the response
   return HttpResponse(template.render(context, request))
-  
+ #view function for the homepage 
 def main(request):
+  #load the template "main.html"
   template = loader.get_template('main.html')
+  #render the template and return the response
   return HttpResponse(template.render())
-
+# Define a view function named 'testing'
+# This function handles HTTP requests sent to this route
 def testing(request):
+   # Load the HTML template file named 'template.html'
+  # Django looks for this file inside the templates folder
   template = loader.get_template('template.html')
+   # Create a context dictionary
+  # This dictionary contains data that will be sent to the template
   context = {
     'fruits': ['Apple', 'Banana', 'Cherry'],   
   }
+   # Render the template with the provided context data
+  # and return the result as an HTTP response to the browser
   return HttpResponse(template.render(context, request))
