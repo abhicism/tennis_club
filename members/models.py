@@ -7,3 +7,5 @@ class Member(models.Model):   # Create a database model (table) named Member
   joined_date = models.DateField(null=True) #date col, stored as null if value is missing
   age = models.IntegerField(null=True) #integer col to store age , allowed to store null if value is missing
   
+def __str__(self):
+    return f"{self.firstname} {self.lastname}"
