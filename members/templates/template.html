@@ -2,11 +2,15 @@
 <html>
 <body>
 
-{% for x in fruits %}
-  <h1>{{ x }}</h1>
-{% endfor %}
+<ul> <!-- Start of an unordered list -->
+    <!-- Django template loop: iterates through each object in 'mymembers' -->
+  {% for x in mymembers %}
+   <!-- Displays the firstname field of each member object -->
+    <li>{{ x.firstname }}</li>
+  {% endfor %}   <!-- End of the loop -->
+</ul>
 
-<p>In views.py you can see what the fruits variable looks like.</p>
+<p>In views.py you can see how to import and fetch members from the database.</p>
 
 </body>
-</html>
+</html>       

@@ -45,14 +45,9 @@ def main(request):
 # Define a view function named 'testing'
 # This function handles HTTP requests sent to this route
 def testing(request):
-   # Load the HTML template file named 'template.html'
-  # Django looks for this file inside the templates folder
+  mymembers = Member.objects.all().values()
   template = loader.get_template('template.html')
-   # Create a context dictionary
-  # This dictionary contains data that will be sent to the template
   context = {
-    'fruits': ['Apple', 'Banana', 'Cherry'],   
+    'mymembers': mymembers,
   }
-   # Render the template with the provided context data
-  # and return the result as an HTTP response to the browser
   return HttpResponse(template.render(context, request))
