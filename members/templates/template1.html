@@ -3,19 +3,25 @@
 <body>
 
 <p>The queryset object:</p>
-<!-- Print the entire queryset variable -->
+
 {{ mymembers }}
 
 <p>Loop through the items:</p>
 
 <table border='1'>
+  <tr>
+    <th>ID</th>
+    <th>Firstname</th>
+    <th>Lastname</th>
+  </tr>
   {% for x in mymembers %}
     <tr>
-         <!-- Display the whole object x -->
-      <td>{{ x }}</td>
+      <td>{{ x.id }}</td>
+      <td>{{ x.firstname }}</td>
+      <td>{{ x.lastname }}</td>
     </tr>
   {% endfor %}
 </table>
 
 </body>
-</html>
+</html>      

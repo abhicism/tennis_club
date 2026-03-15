@@ -45,9 +45,16 @@ def main(request):
 # Define a view function named 'testing'
 # This function handles HTTP requests sent to this route
 def testing(request):
+  mydata = Member.objects.values_list('firstname')
   template = loader.get_template('template.html')
-  #context ={
-    # You can add any data you want to pass to the template here
-    # For example: 'message': 'Hello, World!'
-  # }
-  return HttpResponse(template.render()) 
+  context = {
+    'mymembers': mydata,
+  }
+  return HttpResponse(template.render(context, request))
+def testing1(request):
+  mydata = Member.objects.filter(firstname='Emil').values()
+  template = loader.get_template('template.html')
+  context = {
+    'mymembers': mydata,
+  }
+  return HttpResponse(template.render(context, request))

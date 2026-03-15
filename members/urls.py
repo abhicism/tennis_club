@@ -20,5 +20,6 @@ urlpatterns = [
      # 'testing/' is the URL for the testing page
     # Example: http://127.0.0.1:8000/testing/
     # When this URL is accessed, Django calls the 'testing' view function
-    path('testing/', views.testing, name='testing'),    
+    path('testing/', views.testing, name='testing'), 
+    path('testing1/', views.testing1, name='testing1'),    
 ]
