@@ -1,0 +1,19 @@
+<!--return specific column data, here only first name-->
+<!DOCTYPE html>
+<html>
+<body>
+<p>The queryset object:</p>
+<!--display the queryset object passed from the view-->
+{{ mymembers }}
+<p>Loop through the items:</p>
+<!--create a table to display the data-->
+<table border='1'>
+  <!--loop through the queryset and display only the first name-->
+  {% for x in mymembers %}
+    <tr>
+      <td>{{ x }}</td>
+    </tr>
+  {% endfor %} 
+</table>
+</body>
+</html>

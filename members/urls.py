@@ -21,5 +21,12 @@ urlpatterns = [
     # Example: http://127.0.0.1:8000/testing/
     # When this URL is accessed, Django calls the 'testing' view function
     path('testing/', views.testing, name='testing'), 
-    path('testing1/', views.testing1, name='testing1'),    
+    path('testing1/', views.testing1, name='testing1'),  
+    path('testing2/', views.testing2, name='testing2'),  
+    path('testing3/', views.testing3, name='testing3'),
+    path('testing4/', views.testing4, name='testing4'),
+    path('testing5/', views.testing5, name='testing5'),
+    path('testing6/', views.testing6, name='testing6'),
+    path('testing7/', views.testing7, name='testing7'),
+    path('testing8/', views.testing8, name='testing8'),
 ]

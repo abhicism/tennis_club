@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <title>the queryset  object </title>
+    {{mymembers}}
+    <table border="1">
+        <tr>
+            <th>id</th>
+            <th>firstname</th>
+            <th>lastname</th>
+            <th>email</th>
+        </tr>
+        {% for member in mymembers %}
+        <tr>
+            <td>{{member.id}}</td>
+            <td>{{member.firstname}}</td>
+            <td>{{member.lastname}}</td>
+            <td>{{member.email}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
+
+

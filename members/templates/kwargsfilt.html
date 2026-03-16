@@ -1,21 +1,20 @@
-<!--return specific row data-->
 <!DOCTYPE html>
 <html>
 <body>
-<!--return specific row data-->
+
 <p>The queryset object:</p>
 
 {{ mymembers }}
 
 <p>Loop through the items:</p>
-
+<!--Create a table to display member data -->
 <table border='1'>
-  <!--Table header row showing column names -->
   <tr>
     <th>ID</th>
     <th>Firstname</th>
     <th>Lastname</th>
   </tr>
+   <!-- Django template loop to iterate through each member in mymembers -->
   {% for x in mymembers %}
     <tr>
       <td>{{ x.id }}</td>
@@ -26,4 +25,4 @@
 </table>
 
 </body>
-</html>      
+</html>    
