@@ -5,6 +5,7 @@ from . import views
 # urlpatterns is a list that stores all URL routes for this app
 # Django checks this list to decide which view should handle a request
 urlpatterns = [
+     path('members/', views.members_list),
     # '' represents the root URL of this app (example: http://127.0.0.1:8000/)
     # When a user visits the root URL, Django calls the 'main' view function
     # name='main' gives this URL a name so it can be referenced in templates

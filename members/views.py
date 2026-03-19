@@ -1,6 +1,10 @@
 from django.http import HttpResponse #import httpresponse class to send an http response back to the browser
 from django.template import loader #import template loader to manually load an html template
 from .models import Member #imports the member model from the current app's model.py
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import Member
+from .serializers import MemberSerializer
 #basically we have used member, template and httpresponse class
 def members(request):
   mymembers = Member.objects.all().values()
@@ -146,3 +150,17 @@ def testing10(request):
     'fruits': ['Apple', 'Banana', 'Cherry'],
   }
   return HttpResponse(template.render(context, request))
+
+@api_view(['GET','POST'])
+def members_list(request):
+
+    if request.method == 'GET':
+        members = Member.objects.all()
+        serializer = MemberSerializer(members, many=True)
+        return Response(serializer.data)
+
+    if request.method == 'POST':
+        serializer = MemberSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+        return Response(serializer.data)
