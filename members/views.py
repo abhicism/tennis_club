@@ -164,3 +164,24 @@ def members_list(request):
         if serializer.is_valid():
             serializer.save()
         return Response(serializer.data)
+#create a view function named 'member_detail' that handles GET requests to retrieve details of a specific member by their ID.
+@api_view(['GET','PUT','DELETE'])
+def member_detail(request, id):
+    try:
+        member = Member.objects.get(id=id)
+    except Member.DoesNotExist:
+        return Response({"error": "Member not found"})
+
+    if request.method == 'GET':
+        serializer = MemberSerializer(member)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = MemberSerializer(member, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+        return Response(serializer.data)
+
+    elif request.method == 'DELETE':
+        member.delete()
+        return Response({"message": "Deleted successfully"})
