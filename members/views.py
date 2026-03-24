@@ -1,187 +1,129 @@
-from django.http import HttpResponse #import httpresponse class to send an http response back to the browser
-from django.template import loader #import template loader to manually load an html template
-from .models import Member #imports the member model from the current app's model.py
+from django.http import HttpResponse
+from django.template import loader
+from .models import Member
+from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Member
 from .serializers import MemberSerializer
-#basically we have used member, template and httpresponse class
-def members(request):
-  mymembers = Member.objects.all().values()
-  template = loader.get_template('all_members.html')
-  context = {
-    'mymembers': mymembers,
-  }
-  return HttpResponse(template.render(context, request))
-#renders the template with the provided context data.
-# Wraps the rendered HTML inside HttpResponse
-#send the final html response back to the browser
-#view function that handles request to display one specific member by their ID.  
-def details(request, id):
-  mymember = Member.objects.get(id=id)
-  template = loader.get_template('details.html')
-  context = {
-    'mymember': mymember,
-  }
-  return HttpResponse(template.render(context, request))
- #view function for the homepage 
-def main(request):
-  template = loader.get_template('main.html')
-  return HttpResponse(template.render()) 
-# Define a view function named 'testing'
-# This function handles HTTP requests sent to this route
-def testing(request):
-  mydata = Member.objects.all().values()
-  template = loader.get_template('template.html')
-  context = {
-    'mymembers': mydata,
-  }
-  return HttpResponse(template.render(context, request))
-  return HttpResponse(template.render(context, request))
 
-#filter the data based on the first name and return the result to the template
-def testing1(request):
-  mydata = Member.objects.filter(firstname='Emil').values()
-  template = loader.get_template('template1.html')
-  context = {
-    'mymembers': mydata,
-  }
-  return HttpResponse(template.render(context, request))
 
-#fetch only the first name of all members and return it to the template
-def testing2(request):
-  mydata = Member.objects.values_list('firstname')
-  template = loader.get_template('template2.html')
-  context = {
-    'mymembers': mydata,
-  }
-  return HttpResponse(template.render(context, request))
+# ================== API (ViewSet) ==================
+class MemberViewSet(viewsets.ModelViewSet):
+    queryset = Member.objects.all()
+    serializer_class = MemberSerializer
 
-#filter the data based on the last name and id and return the result to the template
-"""
-AND
-The filter() method takes the arguments as **kwargs (keyword arguments), 
-so you can filter on more than one field by separating them by a comma.
-"""
 
-def testing3(request):
-  mydata = Member.objects.filter(lastname ='Refsnes', id=2).values()
-  template = loader.get_template('kwargsfilt.html')
-  context = {
-    'mymembers': mydata,
-  }
-  return HttpResponse(template.render(context, request))
-
-"""
-OR
-To return records where firstname is Emil or firstname is Tobias,
-(meaning: returning records that matches either query, not necessarily both).
-We can use multiple filter() methods, separated by a pipe | character. 
-"""
-def testing4(request):
-  mydata = Member.objects.filter(firstname='Emil').values() | Member.objects.filter(firstname='Tobias').values()
-  template = loader.get_template('template3.html')
-  context = {
-    'mymembers': mydata,
-  }
-  return HttpResponse(template.render(context, request))
-"""
-field lookups
-Use the __startswith keyword:
-"""
-def testing5(request):
-  mydata = Member.objects.filter(firstname__startswith='L').values()
-  template = loader.get_template('template4.html')
-  context = {
-    'mymembers': mydata,
-  }
-  return HttpResponse(template.render(context, request))
-"""
-order_by() method is used to sort the result in ascending or descending order.
-here we order the result by the firstname.
-"""
-def testing6(request):
-  mydata = Member.objects.all().order_by('firstname').values()
-  template = loader.get_template('template5.html')
-  context = {
-    'mymembers': mydata,
-  }
-  return HttpResponse(template.render(context, request))
-
-"""
-descending order :
-By default, the result is sorted ascending (the lowest value first),
-to change the direction to descending (the highest value first),
-use the minus sign (NOT), - in front of the field name:
-"""
-def testing7(request):
-  mydata = Member.objects.all().order_by('-firstname').values()
-  template = loader.get_template('template6.html')
-  context = {
-    'mymembers': mydata,
-  }
-  return HttpResponse(template.render(context, request))
-"""
-multiple order bys:
-to order by more than one field,
-separate the field names by a comma in the order_by() method:
-"""
-def testing8(request):
-  #lastname is ordered in ascending order and id is ordered in descending order
-  mydata = Member.objects.all().order_by('lastname', '-id').values()
-  template = loader.get_template('template7.html')
-  context = {
-    'mymembers': mydata,
-  }
-  return HttpResponse(template.render(context, request))
-
-#basic testing template view for test
-def testing9(request):
-  template = loader.get_template('basictemplate.html')
-  context = {
-    'fruits': ['Apple', 'Banana', 'Cherry'],   
-  }
-  return HttpResponse(template.render(context, request))
-
-#global static files testing
-def testing10(request):
-  template = loader.get_template('globalstatic.html')
-  context = {
-    'fruits': ['Apple', 'Banana', 'Cherry'],
-  }
-  return HttpResponse(template.render(context, request))
-
-@api_view(['GET','POST'])
+# ================== API (Function-based) ==================
+@api_view(['GET', 'POST'])
 def members_list(request):
-
+    """List all members or create a new one"""
     if request.method == 'GET':
         members = Member.objects.all()
         serializer = MemberSerializer(members, many=True)
         return Response(serializer.data)
-
-    if request.method == 'POST':
+    
+    elif request.method == 'POST':
         serializer = MemberSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-        return Response(serializer.data)
-#create a view function named 'member_detail' that handles GET requests to retrieve details of a specific member by their ID.
-@api_view(['GET','PUT','DELETE'])
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
 def member_detail(request, id):
+    """Retrieve, update or delete a member"""
     try:
         member = Member.objects.get(id=id)
     except Member.DoesNotExist:
-        return Response({"error": "Member not found"})
-
+        return Response({"error": "Member not found"}, status=404)
+    
     if request.method == 'GET':
         serializer = MemberSerializer(member)
         return Response(serializer.data)
-
+    
     elif request.method == 'PUT':
         serializer = MemberSerializer(member, data=request.data)
         if serializer.is_valid():
             serializer.save()
-        return Response(serializer.data)
-
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+    
     elif request.method == 'DELETE':
         member.delete()
-        return Response({"message": "Deleted successfully"})
+        return Response({"message": "Member deleted"}, status=204)
+
+
+# ================== TEMPLATE VIEWS ==================
+
+def main(request):
+    template = loader.get_template('main.html')
+    return HttpResponse(template.render())
+
+
+def members(request):
+    mymembers = Member.objects.all().values()
+    template = loader.get_template('all_members.html')
+    return HttpResponse(template.render({'mymembers': mymembers}, request))
+
+
+def details(request, id):
+    mymember = Member.objects.get(id=id)
+    template = loader.get_template('details.html')
+    return HttpResponse(template.render({'mymember': mymember}, request))
+
+
+def testing(request):
+    template = loader.get_template('template.html')
+    return HttpResponse(template.render({'mymembers': Member.objects.all().values()}, request))
+
+
+def testing1(request):
+    template = loader.get_template('template1.html')
+    return HttpResponse(template.render({'mymembers': Member.objects.filter(firstname='Emil').values()}, request))
+
+
+def testing2(request):
+    template = loader.get_template('template2.html')
+    return HttpResponse(template.render({'mymembers': Member.objects.values_list('firstname')}, request))
+
+
+def testing3(request):
+    template = loader.get_template('kwargsfilt.html')
+    return HttpResponse(template.render({'mymembers': Member.objects.filter(lastname='Refsnes', id=2).values()}, request))
+
+
+def testing4(request):
+    data = Member.objects.filter(firstname='Emil').values() | Member.objects.filter(firstname='Tobias').values()
+    template = loader.get_template('template3.html')
+    return HttpResponse(template.render({'mymembers': data}, request))
+
+
+def testing5(request):
+    template = loader.get_template('template4.html')
+    return HttpResponse(template.render({'mymembers': Member.objects.filter(firstname__startswith='L').values()}, request))
+
+
+def testing6(request):
+    template = loader.get_template('template5.html')
+    return HttpResponse(template.render({'mymembers': Member.objects.all().order_by('firstname').values()}, request))
+
+
+def testing7(request):
+    template = loader.get_template('template6.html')
+    return HttpResponse(template.render({'mymembers': Member.objects.all().order_by('-firstname').values()}, request))
+
+
+def testing8(request):
+    template = loader.get_template('template7.html')
+    return HttpResponse(template.render({'mymembers': Member.objects.all().order_by('lastname', '-id').values()}, request))
+
+
+def testing9(request):
+    template = loader.get_template('basictemplate.html')
+    return HttpResponse(template.render({'fruits': ['Apple', 'Banana', 'Cherry']}, request))
+
+
+def testing10(request):
+    template = loader.get_template('globalstatic.html')
+    return HttpResponse(template.render({'fruits': ['Apple', 'Banana', 'Cherry']}, request))
