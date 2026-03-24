@@ -1,33 +1,44 @@
 from django.http import HttpResponse
 from django.template import loader
 from .models import Member
+
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+
 from .serializers import MemberSerializer
+from .permissions import IsOwnerOrAdmin   # ✅ added
 
 
-# ================== API (ViewSet) ==================
+# ================== API (ViewSet - FIXED & SECURE) ==================
 class MemberViewSet(viewsets.ModelViewSet):
-    queryset = Member.objects.all()
     serializer_class = MemberSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerOrAdmin]  # ✅ added
+
+    # ✅ Show only logged-in user's data
+    def get_queryset(self):
+        return Member.objects.filter(owner=self.request.user)
+
+    # ✅ Auto assign owner
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 # ================== API (Function-based) ==================
 @api_view(['GET', 'POST'])
 def members_list(request):
     """List all members or create a new one"""
+
     if request.method == 'GET':
-        members = Member.objects.all()
+        members = Member.objects.filter(owner=request.user)
         serializer = MemberSerializer(members, many=True)
         return Response(serializer.data)
-    
+
     elif request.method == 'POST':
         serializer = MemberSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(owner=request.user)
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
@@ -35,22 +46,23 @@ def members_list(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 def member_detail(request, id):
     """Retrieve, update or delete a member"""
+
     try:
-        member = Member.objects.get(id=id)
+        member = Member.objects.get(id=id, owner=request.user)
     except Member.DoesNotExist:
         return Response({"error": "Member not found"}, status=404)
-    
+
     if request.method == 'GET':
         serializer = MemberSerializer(member)
         return Response(serializer.data)
-    
+
     elif request.method == 'PUT':
         serializer = MemberSerializer(member, data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(owner=request.user)
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
-    
+
     elif request.method == 'DELETE':
         member.delete()
         return Response({"message": "Member deleted"}, status=204)
