@@ -2,23 +2,42 @@ from django.http import HttpResponse
 from django.template import loader
 from .models import Member
 
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
+from django_filters.rest_framework import DjangoFilterBackend
+
 from .serializers import MemberSerializer
-from .permissions import IsOwnerOrAdmin   # ✅ added
+from .permissions import IsOwnerOrAdmin
+from rest_framework.throttling import ScopedRateThrottle
 
 
-# ================== API (ViewSet - FIXED & SECURE) ==================
+# ================== API (ViewSet - FULLY UPDATED) ==================
 class MemberViewSet(viewsets.ModelViewSet):
     serializer_class = MemberSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrAdmin]  # ✅ added
+    permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
 
     # ✅ Show only logged-in user's data
     def get_queryset(self):
         return Member.objects.filter(owner=self.request.user)
+
+    # ✅ ADD FILTERING + SEARCH + ORDERING
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter
+    ]
+
+    # ✅ Exact filtering
+    filterset_fields = ['firstname', 'lastname']
+
+    # ✅ Search (partial match)
+    search_fields = ['firstname', 'lastname']
+
+    # ✅ Ordering
+    ordering_fields = ['firstname', 'lastname', 'id']
 
     # ✅ Auto assign owner
     def perform_create(self, serializer):
@@ -28,8 +47,6 @@ class MemberViewSet(viewsets.ModelViewSet):
 # ================== API (Function-based) ==================
 @api_view(['GET', 'POST'])
 def members_list(request):
-    """List all members or create a new one"""
-
     if request.method == 'GET':
         members = Member.objects.filter(owner=request.user)
         serializer = MemberSerializer(members, many=True)
@@ -45,8 +62,6 @@ def members_list(request):
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def member_detail(request, id):
-    """Retrieve, update or delete a member"""
-
     try:
         member = Member.objects.get(id=id, owner=request.user)
     except Member.DoesNotExist:
