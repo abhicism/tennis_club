@@ -6,12 +6,12 @@ from rest_framework import viewsets, filters
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.throttling import ScopedRateThrottle
 
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .serializers import MemberSerializer
 from .permissions import IsOwnerOrAdmin
-from rest_framework.throttling import ScopedRateThrottle
 
 
 # ================== API (ViewSet - FULLY UPDATED) ==================
@@ -19,11 +19,15 @@ class MemberViewSet(viewsets.ModelViewSet):
     serializer_class = MemberSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
 
+    # ✅ ADD THROTTLING
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'member'
+
     # ✅ Show only logged-in user's data
     def get_queryset(self):
         return Member.objects.filter(owner=self.request.user)
 
-    # ✅ ADD FILTERING + SEARCH + ORDERING
+    # ✅ FILTERING + SEARCH + ORDERING
     filter_backends = [
         DjangoFilterBackend,
         filters.SearchFilter,
